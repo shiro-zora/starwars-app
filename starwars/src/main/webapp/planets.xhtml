@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Planets StarWars</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        .centered-panel-grid {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .panel-grid-container {
+             width: 100%;
+            max-width: 1005px;
+        }
+
+        .panel-grid-add {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .ui-button, .ui-paginator, .ui-button-text, .ui-state-default {
+            color: black !important;
+        }
+
+        .ui-button.ui-state-hover, .ui-button.ui-state-focus, .ui-button.ui-state-active {
+            color: black !important;
+                border-radius: 25px !important;
+
+        }
+
+        .ui-paginator {
+            background-color: #000 !important;
+        }
+
+        .ui-paginator a {
+            color: black !important;
+        }
+
+        .ui-corner-all {
+            border-radius: 28px !important;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100px;
+            background-image: url('/images/starwarsplanets.png');
+            background-repeat: repeat-x;
+            background-size: 30% auto;
+            background-position: center;
+            opacity: 0.5;
+        }
+    </style>
+</h:head>
+<h:body>
+    <h:form id="form">
+        <p:growl id="messages" showDetail="true"/>
+
+        <div class="centered-panel-grid">
+            <div class="panel-grid-container">
+                <p:panelGrid columns="6" columnClasses="label,value">
+                    <p:outputLabel for="searchId" value="Pesquisa por ID:"/>
+                    <p:inputText id="searchId" value="#{planetBean.searchId}"/>
+
+                    <p:outputLabel for="searchName" value="Pesquisa por Nome:"/>
+                    <p:inputText id="searchName" value="#{planetBean.searchName}"/>
+
+                    <p:commandButton value="Pesquisar" actionListener="#{planetBean.searchPlanets}"
+                                     update="planetTable messages" process="@form"/>
+                    <p:commandButton value="Limpar" actionListener="#{planetBean.clearSearch}"
+                                     update="planetTable messages" process="@form"/>
+                </p:panelGrid>
+            </div>
+        </div>
+
+        <p:dataTable id="planetTable" var="planet" value="#{planetBean.filteredPlanets}" paginator="true" rows="10"
+                     rowKey="#{planet.id}">
+
+            <f:facet name="header">
+                Listagem de planetas
+            </f:facet>
+
+            <p:column headerText="ID" sortBy="#{planet.id}">
+                <h:outputText value="#{planet.id}"/>
+            </p:column>
+            <p:column headerText="Nome" sortBy="#{planet.name}">
+                <h:outputText value="#{planet.name}"/>
+            </p:column>
+            <p:column headerText="Clima" sortBy="#{planet.climate}">
+                <h:outputText value="#{planet.climate}"/>
+            </p:column>
+            <p:column headerText="Terreno" sortBy="#{planet.terrain}">
+                <h:outputText value="#{planet.terrain}"/>
+            </p:column>
+            <p:column headerText="Nº Aparições" sortBy="#{planet.appearance}">
+                <h:outputText value="#{planet.appearance}"/>
+            </p:column>
+            <p:column headerText="Ação">
+                <p:commandButton icon="pi pi-trash" value="Deletar" title="Deletar"
+                                 actionListener="#{planetBean.setSelectedPlanet(planet)}"
+                                 oncomplete="PF('deleteDialog').show()" process="@this"/>
+            </p:column>
+        </p:dataTable>
+
+        <div class="panel-grid-add">
+
+            <p:panelGrid columns="7" columnClasses="label,value">
+                <p:outputLabel for="newName" value="Nome:"/>
+                <p:inputText id="newName" value="#{planetBean.newPlanet.name}" required="true"/>
+
+                <p:outputLabel for="newClimate" value="Clima:"/>
+                <p:inputText id="newClimate" value="#{planetBean.newPlanet.climate}" required="true"/>
+
+                <p:outputLabel for="newTerrain" value="Terreno:"/>
+                <p:inputText id="newTerrain" value="#{planetBean.newPlanet.terrain}" required="true"/>
+
+                <p:commandButton value="Adicionar Planeta" actionListener="#{planetBean.createPlanet}"
+                                 update="planetTable messages" process="@form"/>
+            </p:panelGrid>
+        </div>
+        <p:confirmDialog header="Confirmação"
+                         message="Tem certeza que deseja deletar o planeta?"
+                         widgetVar="deleteDialog">
+            <p:commandButton value="Sim" actionListener="#{planetBean.deletePlanet}"
+                             update="planetTable messages" oncomplete="PF('deleteDialog').hide()"
+                             process="@this"/>
+            <p:commandButton value="Não" onclick="PF('deleteDialog').hide()" type="button"/>
+        </p:confirmDialog>
+    </h:form>
+
+    <div class="footer">
+    </div>
+
+</h:body>
+</html>
